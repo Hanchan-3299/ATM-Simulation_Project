@@ -1,5 +1,3 @@
-Version 1.0.0
-
 firstly, you have to create database folder. After that, 
 create ambank_receipts.txt, ambank.txt, bankutama.txt, and bankutama_receipts.txt 
 in database folder to save all transaction

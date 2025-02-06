@@ -1,0 +1,8 @@
+Version 1.0.1
+
+What's new :
+
+1. fix bug in database
+2. fix bug when creating account
+3. fix bug when transfer money to another bank
+4. increase admin cost for another bank transfer

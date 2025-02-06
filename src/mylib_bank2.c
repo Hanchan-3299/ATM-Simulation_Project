@@ -337,7 +337,7 @@ void deposite(Account* currentAccount, Transaction** transactionHistory) {
     sprintf(description, "Setoran: %.2f", amount);
     addTransaction(transactionHistory, description);
 
-    saveAccountsToFile(currentAccount);
+    updateAccountBalance("database/bankutama.txt", currentAccount->accountNumber, currentAccount->balance);
 }
 
 // Fungsi untuk penarikan uang
@@ -393,7 +393,7 @@ void withdrawal(Account* currentAccount, Transaction** transactionHistory) {
         sprintf(description, "Penarikan: %.2f", amount);
         addTransaction(transactionHistory, description);
 
-        saveAccountsToFile(currentAccount);
+        updateAccountBalance("database/bankutama.txt", currentAccount->accountNumber, currentAccount->balance);
     }
 }
 
@@ -434,8 +434,8 @@ void updateAccountInFile(const char* filename, Account* account) {
     while (fscanf(file, "%d", &accNumber) != EOF) {
         pos = ftell(file);
         if (accNumber == account->accountNumber) {
-            fseek(file, pos - sizeof(int), SEEK_SET);
-            fprintf(file, "%d %d %.2f\n", account->accountNumber, account->pin, account->balance);
+            fseek(file, pos + sizeof(int) + sizeof(int), SEEK_SET);
+            fprintf(file, "%.2f\n", account->balance);
             break;
         }
         fseek(file, pos, SEEK_SET);
@@ -443,7 +443,6 @@ void updateAccountInFile(const char* filename, Account* account) {
 
     fclose(file);
 }
-
 
 // Fungsi transfer sesama
 void transferSesama(Account* currentAccount, Transaction** transactionHistory) {
@@ -595,9 +594,9 @@ void transfer(Account* currentAccount, Transaction** transactionHistory) {
     gotoxy(38,14);
     printf("       Detail Transfer :       Nominal     : Rp. %.2f           ", transferAmount);
     gotoxy(38,15);
-    printf("                               Biaya Admin : Rp. 1500           ");
+    printf("                               Biaya Admin : Rp. 2500           ");
     gotoxy(38,16);
-    printf("                               Total       : Rp. %.2f           ", currentAccount->balance + 1500);
+    printf("                               Total       : Rp. %.2f           ", transferAmount + 2500);
     gotoxy(38,17);
     printf("================================================================");
     
@@ -617,12 +616,13 @@ void transfer(Account* currentAccount, Transaction** transactionHistory) {
 
     if (choice == 'y' || choice == 'Y') {
         // Melakukan transfer
-        currentAccount->balance -= (transferAmount + 1500);
+        currentAccount->balance -= (transferAmount + 2500);
         targetAccount->balance += transferAmount;
 
         // Menyimpan saldo yang sudah diperbarui ke file
-        saveAccountsToFile(currentAccount);  // Update akun pengirim di txt
-        updateAccountInFile("database/ambank.txt", targetAccount);  // Update akun penerima di txt bank kedua
+        updateAccountBalance("database/bankutama.txt", currentAccount->accountNumber, currentAccount->balance);
+        updateAccountBalance("database/ambank.txt", targetAccount->accountNumber, targetAccount->balance);
+        // updateAccountInFile("database/ambank.txt", targetAccount);  // Update akun penerima di txt bank kedua
 
 
 

@@ -116,76 +116,113 @@ void getMaskedInput(char* inputBuffer, int maxLength) {
 }
 
 
+// Fungsi untuk memeriksa apakah akun dengan nomor tertentu sudah ada di file
+int isAccountExistInFile(const char* filename, int accountNumber) {
+    FILE* file = fopen(filename, "r");
+    if (file == NULL) {
+        return 0; // File tidak ditemukan, anggap akun belum ada
+    }
+
+    int accNumber, pin;
+    float balance;
+    
+    // Membaca setiap baris untuk memeriksa nomor akun
+    while (fscanf(file, "%d %d %f\n", &accNumber, &pin, &balance) == 3) {
+        if (accNumber == accountNumber) {
+            fclose(file);
+            return 1; // Akun ditemukan
+        }
+    }
+
+    fclose(file);
+    return 0; // Akun tidak ditemukan
+}
+
 
 void create (Account **root){
     clear();
-                int accountNumber;
-                char pinInput[7]; // Buffer untuk PIN (6 digit + null terminator)
-                float balance;
+    int accountNumber;
+    char pinInput[7]; // Buffer untuk PIN (6 digit + null terminator)
+    float balance;
 
-                gotoxy(38,13);
-                printf("================================================================");
-                gotoxy(38,14);
-                printf("                 Masukkan nomor akun baru: ");
-                gotoxy(38,15);
-                printf("================================================================");
-                gotoxy(81,14);
+    do {
+        clear();
+        gotoxy(38, 13);
+        printf("================================================================");
+        gotoxy(38, 14);
+        printf("                 Masukkan nomor akun baru:                      ");
+        gotoxy(38, 15);
+        printf("================================================================");
+        gotoxy(81, 14);
+        scanf("%d", &accountNumber);
 
-                scanf("%d", &accountNumber);
+        // Cek apakah nomor akun sudah ada di file
+        if (isAccountExistInFile("database/bankutama.txt", accountNumber)) {
+            clear();
+            gotoxy(33, 13);
+            printf("==========================================================================");
+            gotoxy(33, 14);
+            printf("        Nomor akun %d sudah ada. Coba lagi dengan nomor akun lain.        ", accountNumber);
+            gotoxy(33, 15);
+            printf("==========================================================================");
+            getchar(); // Clear buffer
+            getchar(); // Clear buffer
+        }
+    } while (isAccountExistInFile("database/bankutama.txt", accountNumber)); // Ulangi jika nomor akun sudah ada
 
-                do {
-                    clear();
+    do {
+        clear();
 
-                    gotoxy(38,13);
-                    printf("================================================================");
-                    gotoxy(38,14);
-                    printf("                   Masukkan PIN baru (6 digit):                 ");
-                    gotoxy(38,15);
-                    printf("================================================================");
-                    gotoxy(86,14);
+        gotoxy(38,13);
+        printf("================================================================");
+        gotoxy(38,14);
+        printf("                   Masukkan PIN baru (6 digit):                 ");
+        gotoxy(38,15);
+        printf("================================================================");
+        gotoxy(86,14);
 
-                    getMaskedInput(pinInput, 7);
-                    if (strlen(pinInput) != 6 || atoi(pinInput) < 0) {
-                        printf("\nPIN harus 6 digit angka. Coba lagi.\n");
-                    }
-                } while (strlen(pinInput) != 6 || atoi(pinInput) < 0);
+        getMaskedInput(pinInput, 7);
+        if (strlen(pinInput) != 6 || atoi(pinInput) < 0) {
+            printf("\nPIN harus 6 digit angka. Coba lagi.\n");
+        }
+    } while (strlen(pinInput) != 6 || atoi(pinInput) < 0);
 
-                int pin = atoi(pinInput); // Konversi string PIN ke integer
+    int pin = atoi(pinInput); // Konversi string PIN ke integer
 
-                clear();
-                gotoxy(38,13);
-                printf("================================================================");
-                gotoxy(38,14);
-                printf("                      Masukkan saldo awal:                      ");
-                gotoxy(38,15);
-                printf("================================================================");
-                gotoxy(81,14);
+    clear();
+    gotoxy(38,13);
+    printf("================================================================");
+    gotoxy(38,14);
+    printf("                      Masukkan saldo awal:                      ");
+    gotoxy(38,15);
+    printf("================================================================");
+    gotoxy(81,14);
 
-                scanf("%f", &balance);
+    scanf("%f", &balance);
 
-                *root = addAccount(*root, accountNumber, pin, balance);
-                saveAccountsToFile(*root); // Simpan akun yang baru dibuat ke file
-                clear();
+    *root = addAccount(*root, accountNumber, pin, balance);
+    saveAccountsToFile(*root); // Simpan akun yang baru dibuat ke file
+    clear();
 
-                gotoxy(38,13);
-                printf("================================================================");
-                gotoxy(38,14);
-                printf("                      Akun berhasil dibuat!                     ");
-                gotoxy(38,15);
-                printf("================================================================");
+    gotoxy(38,13);
+    printf("================================================================");
+    gotoxy(38,14);
+    printf("                      Akun berhasil dibuat!                     ");
+    gotoxy(38,15);
+    printf("================================================================");
 
-                getchar();
-                getchar();
+    getchar();
+    getchar();
 
 
-                gotoxy(38,20);
-                printf("================================================================");
-                gotoxy(38,21);
-                printf("            Terimakasih telah mempercayai BANK UTAMA            ");
-                gotoxy(38,22);
-                printf("================================================================");
+    gotoxy(38,20);
+    printf("================================================================");
+    gotoxy(38,21);
+    printf("            Terimakasih telah mempercayai BANK UTAMA            ");
+    gotoxy(38,22);
+    printf("================================================================");
 
-                getchar();
+    getchar();
 
 
 }
